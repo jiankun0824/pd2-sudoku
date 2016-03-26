@@ -3,8 +3,7 @@ class Sudoku
 public:
 
 	Sudoku();
-	~Sudoku();
-	
+
 	void giveQuestion(); //no input /output 81 digits
 	
 	void readIn(); // input 81 digits / no output

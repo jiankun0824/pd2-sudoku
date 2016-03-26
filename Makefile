@@ -1,17 +1,10 @@
-Sudoku:Sudoku.o giveQuestion.o solve.o transform.o
-	g++ -o Sudoku Sudoku.o giveQuestion.o solve.o transform.o
+all:Sudoku.o giveQuestion.cpp solve.cpp transform.cpp
+	g++ -o giveQuestion giveQuestion.cpp Sudoku.o
+	g++ -o solve solve.cpp Sudoku.o
+	g++ -o transform transform.cpp Sudoku.o
 
 Sudoku.o:Sudoku.cpp Sudoku.h
-	g++ -c Sudoku.cpp
-
-giveQuestion.o:giveQuestion.cpp Sudoku.h
-	g++ -c giveQuestion.cpp
-
-solve.o:solve.cpp Sudoku.h
-	g++ -c solve.cpp
-
-transform.o:transform.cpp Sudoku.h
-	g++ -c transform.cpp
+	g++ -c Sudoku.cpp -o Sudoku.o
 
 clean:
-	rm main*.o
+	rm *.o Sudoku giveQuestion solve
