@@ -7,4 +7,4 @@ Sudoku.o:Sudoku.cpp Sudoku.h
 	g++ -c Sudoku.cpp -o Sudoku.o
 
 clean:
-	rm *.o Sudoku giveQuestion solve
+	rm *.o Sudoku giveQuestion solve transform
