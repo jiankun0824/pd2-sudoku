@@ -5,26 +5,34 @@
 
 
 
-int BlockIndex[81];
-int RowIndex[81];
-int ColIndex[81];
+int BlockIndex[81];//use in solve() and transform()
+int RowIndex[81];//use in solve() and transform()
+int ColIndex[81];//use in solve() and transform()
 
-int Entry[81];
-int Posible_Row[9];
-int Posible_Col[9];
-int Posible_Block[9];
+int Entry[81];//use in solve() and transform()
+int Posible_Row[9]; //use in solve()
+int Posible_Col[9]; //use in solve()
+int Posible_Block[9]; //use in solve()
 
+int QuestionRow[9]; //use in transform()
+int QuestionCol[9]; //use in transform()
+int QuestionBlock[9]; //use in transform()
+
+const int CON=0x3fe;
+const int ZERO=0;
 int Sort[81];
 int sort_counter=0;
 
 int i,j,k; //loop
 
+
 Sudoku::Sudoku(){}
 
 void Sudoku::giveQuestion()
 {
-	int a;
 	srand(time(NULL));
+	int a;
+	
 	a=rand()%1;
 	switch(a)
 	{
@@ -77,7 +85,8 @@ void Sudoku::readIn()
 			BlockIndex[Index]=(j/3)+(i/3)*3;
 
 		}
-		Posible_Row[i]=Posible_Col[i]=Posible_Block[i]=0x3fe;
+		Posible_Row[i]=Posible_Col[i]=Posible_Block[i]=CON; //solve question
+		QuestionBlock[i]=QuestionRow[i]=QuestionCol[i]=ZERO; // transform question
 	}
 
 
@@ -109,9 +118,11 @@ void Sudoku::readIn()
 	printf("\n");*/
 
 	//printf("readin done\n");
+
+	printf("\n\n");
 }
 
-void Printf_Ans()
+void Print_arry()
 {
 	printf("%c\n",'1');
 	int Cell_Ans_bit;
@@ -121,12 +132,18 @@ void Printf_Ans()
 	{
 		Cell_Ans_bit = Entry[i];
 
-		for(Value = 0; Value <= 9; Value++)
+		if(Entry[i]==0)
 		{
-			if(Cell_Ans_bit==(1<<Value))
-				printf("%d ",Value);
+			printf("0 ");
 		}
-
+		else
+		{
+			for(Value = 0; Value <= 9; Value++)
+			{
+				if(Cell_Ans_bit==(1<<Value))
+					printf("%d ",Value);
+			}
+		}
 
 		if((i % 9) == 8)
 			printf("\n");
@@ -137,7 +154,8 @@ void Printf_Ans()
 
 void succesed()
 	{
-		Printf_Ans();
+		Print_arry();
+		return;
 	}
 
 int IndexOfMinimunPosible(int s)
@@ -229,30 +247,381 @@ void Sudoku::solve()
 
 void Sudoku::changeNum(int a , int b)
 {
+	printf("changeNum a=%d b=%d\n",a,b);
 
+	i=0;
+	while(i!=81)
+	{
+
+			if(Entry[i]==(1<<a))
+			{
+				printf("change a to b\n");
+				Entry[i]=(1<<b);
+				i=i+1;
+
+			}
+
+			if(Entry[i]==(1<<b))
+			{
+				Entry[i]=(1<<a);
+				i=i+1;
+			}
+
+			i=i+1;
+	}
+
+	Print_arry();
 }
 	
 void Sudoku::changeRow(int a , int b)
 {
+	int tmp,tmp2,c;
+	
+	if(b<a)
+	{
+		tmp = a;
+		a =b;
+		b = tmp;
+	}
 
+	printf("changeRow: a=%d b=%d \n",a ,b );
+
+	if(a==0 && b==1)
+	{
+		for(i=0;i<3;i++)
+		{
+			tmp2=QuestionBlock[0+i];
+			QuestionBlock[0+i]=QuestionBlock[3+i];
+			QuestionBlock[3+i]=tmp2;
+		}
+
+		for(i = 0; i < 3; i++)
+		{
+			tmp=QuestionRow[0+i];
+			QuestionRow[0+i]=QuestionRow[3+i];
+			QuestionRow[3+i]=tmp;
+		}
+		printf("a=0 b=1\n");
+	}
+
+	if(a==0 && b==2)
+	{
+		for(i=0;i<3;i++)
+		{
+			tmp2=QuestionBlock[0+i];
+			QuestionBlock[0+i]=QuestionBlock[6+i];
+			QuestionBlock[6+i]=tmp2;
+		}
+
+		for(i = 0; i < 3; i++)
+		{
+			tmp=QuestionRow[0+i];
+			QuestionRow[0+i]=QuestionRow[6+i];
+			QuestionRow[6+i]=tmp;
+		}
+	}
+
+	if(a==1 && b==2)
+	{
+		for(i=0;i<3;i++)
+		{
+			tmp2=QuestionBlock[3+i];
+			QuestionBlock[3+i]=QuestionBlock[6+i];
+			QuestionBlock[6+i]=tmp2;
+		}
+
+		for(i = 0; i < 3; i++)
+		{
+			tmp=QuestionRow[3+i];
+			QuestionRow[3+i]=QuestionRow[6+i];
+			QuestionRow[6+i]=tmp;
+		}
+	}
+
+	
+
+	int CIndex;
+	int RIndex;
+	int BIndex;
+
+	for(i = 0; i < 81; i++)
+	{
+		CIndex=ColIndex[i];
+		RIndex=RowIndex[i];
+		BIndex=BlockIndex[i];
+
+		Entry[i]=QuestionRow[RIndex] & QuestionBlock[BIndex] & QuestionCol[CIndex];
+	}
+
+	return;
 }
 	
 void Sudoku::changeCol(int a , int b)
 {
+	int tmp,tmp2,c;
+	
+	if(b<a)
+	{
+		tmp = a;
+		a =b;
+		b = tmp;
+	}
 
+	printf("changeCol: a=%d b=%d \n",a ,b );
+
+	if(a==0 && b==1)
+	{
+		for(i=0;i<3;i++)
+		{
+			tmp2=QuestionBlock[3*i];
+			QuestionBlock[3*i]=QuestionBlock[3*i+1];
+			QuestionBlock[3*i+1]=tmp2;
+		}
+
+		for(i = 0; i < 3; i++)
+		{
+			tmp=QuestionCol[0+i];
+			QuestionCol[0+i]=QuestionCol[3+i];
+			QuestionCol[3+i]=tmp;
+		}
+		printf("a=0 b=1\n");
+	}
+
+	if(a==0 && b==2)
+	{
+		for(i=0;i<3;i++)
+		{
+			tmp2=QuestionBlock[3*i];
+			QuestionBlock[3*i]=QuestionBlock[3*i+2];
+			QuestionBlock[3*i+2]=tmp2;
+		}
+
+		for(i = 0; i < 3; i++)
+		{
+			tmp=QuestionCol[0+i];
+			QuestionCol[0+i]=QuestionCol[6+i];
+			QuestionCol[6+i]=tmp;
+		}
+	}
+
+	if(a==1 && b==2)
+	{
+		for(i=0;i<3;i++)
+		{
+			tmp2=QuestionBlock[1+i*3];
+			QuestionBlock[1+i*3]=QuestionBlock[2+i*3];
+			QuestionBlock[2+i*3]=tmp2;
+		}
+
+		for(i = 0; i < 3; i++)
+		{
+			tmp=QuestionCol[3+i];
+			QuestionCol[3+i]=QuestionCol[6+i];
+			QuestionCol[6+i]=tmp;
+		}
+	}
+
+	
+
+	int CIndex;
+	int RIndex;
+	int BIndex;
+
+	for(i = 0; i < 81; i++)
+	{
+		CIndex=ColIndex[i];
+		RIndex=RowIndex[i];
+		BIndex=BlockIndex[i];
+
+		Entry[i]=QuestionRow[RIndex] & QuestionBlock[BIndex] & QuestionCol[CIndex];
+	}
+
+	return;
 }
 
 void Sudoku::rotate(int n)
 {
 
 }
-	
+
+void vertical()
+{
+	int tmp,tmp2;
+	j=8;
+	int CIndex;
+	int RIndex;
+	int BIndex;
+
+	for(i=0;i<3;i++)
+	{
+		tmp2=QuestionBlock[0+i];
+		QuestionBlock[0+i]=QuestionBlock[6+i];
+		QuestionBlock[6+i]=tmp2;
+	}
+
+	for(i = 8 ; i > 1; i = i-2)
+	{
+
+		tmp=QuestionRow[j];
+		QuestionRow[j]=QuestionRow[j-i];
+		QuestionRow[j-i]=tmp;
+		j=j-1;
+	}
+
+	for(i = 0; i < 81; i++)
+	{
+		CIndex=ColIndex[i];
+		RIndex=RowIndex[i];
+		BIndex=BlockIndex[i];
+
+		Entry[i]=QuestionRow[RIndex] & QuestionBlock[BIndex] & QuestionCol[CIndex];
+	}
+
+
+}
+
+void horizoltal()
+{
+	int tmp,tmp2;
+	j=8;
+	int CIndex;
+	int RIndex;
+	int BIndex;
+
+
+	for(i = 8 ; i > 1; i = i-2)
+	{
+
+		tmp=QuestionCol[j];
+		QuestionCol[j]=QuestionCol[j-i];
+		QuestionCol[j-i]=tmp;
+		j=j-1;
+	}
+
+	for(i=0;i<3;i++)
+		{
+			tmp2=QuestionBlock[3*i];
+			QuestionBlock[3*i]=QuestionBlock[3*i+2];
+			QuestionBlock[3*i+2]=tmp2;
+		}
+
+	for(i = 0; i < 81; i++)
+	{
+		CIndex=ColIndex[i];
+		RIndex=RowIndex[i];
+		BIndex=BlockIndex[i];
+
+		Entry[i]=QuestionRow[RIndex] & QuestionBlock[BIndex] & QuestionCol[CIndex];
+	}
+}
+
 void Sudoku::flip(int n)
 {
-
+	if(n==0)
+		{
+			vertical();
+		}
+	else
+		{
+			horizoltal();
+		}
 }
 
 void Sudoku::transform()
 {
+	srand(time(NULL));
+	Print_arry();
+	int a=0,b=0;//random number
+	
+
+	//printf("a=%d b=%d\n",a,b );
+	while(a==b)
+	{	
+		a=rand()%10;
+		b=rand()%10;
+	}
+	printf("a=%d b=%d\n",a,b);
+	printf("haha\n");
+	changeNum(a,b);
+
+	int CIndex;
+	int RIndex;
+	int BIndex;
+
+	for(i=0;i<81;i++)
+	{
+		CIndex=ColIndex[i];
+		RIndex=RowIndex[i];
+		BIndex=BlockIndex[i];
+
+		QuestionCol[CIndex] |= Entry[i];
+		QuestionBlock[BIndex] |= Entry[i];
+		QuestionRow[RIndex] |= Entry[i];
+
+	}
+
+
+	for(i=0;i<9;i++)
+		//printf("QuestionRow[%d]=%d\n",i,QuestionCol[i]);
+
+	a=0;
+	b=0;
+	while(a==b)
+	{	
+		a=rand()%3;
+		b=rand()%3;
+	}
+
+	changeRow(a,b);
+	printf("haha\n");
+	for(i=0;i<9;i++)
+		//printf("QuestionRow[%d]=%d\n",i,QuestionCol[i]);
+
+	for(i=0;i<81;i++)
+	{
+		CIndex=ColIndex[i];
+		RIndex=RowIndex[i];
+		BIndex=BlockIndex[i];
+
+		QuestionCol[CIndex] |= Entry[i];
+		QuestionBlock[BIndex] |= Entry[i];
+		QuestionRow[RIndex] |= Entry[i];
+
+	}
+
+	a=0;
+	b=0;
+	while(a==b)
+	{	
+		a=rand()%3;
+		b=rand()%3;
+	}
+
+
+
+	changeCol(a,b);
+
+	for(i=0;i<81;i++)
+	{
+		CIndex=ColIndex[i];
+		RIndex=RowIndex[i];
+		BIndex=BlockIndex[i];
+
+		QuestionCol[CIndex] |= Entry[i];
+		QuestionBlock[BIndex] |= Entry[i];
+		QuestionRow[RIndex] |= Entry[i];
+
+	}
+
+	a=rand()%2;
+
+
+
+	flip(a);
+
+
+	Print_arry();
+
+	return;
 
 }
