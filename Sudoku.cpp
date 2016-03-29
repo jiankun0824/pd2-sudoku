@@ -18,6 +18,10 @@ int QuestionRow[9]; //use in transform()
 int QuestionCol[9]; //use in transform()
 int QuestionBlock[9]; //use in transform()
 
+int ColRotate[9];
+int RowRotate[9];
+int BlockRotate[9];
+
 const int CON=0x3fe;
 const int ZERO=0;
 int Sort[81];
@@ -136,6 +140,7 @@ void Print_arry()
 		{
 			printf("0 ");
 		}
+
 		else
 		{
 			for(Value = 0; Value <= 9; Value++)
@@ -351,6 +356,8 @@ void Sudoku::changeRow(int a , int b)
 		BIndex=BlockIndex[i];
 
 		Entry[i]=QuestionRow[RIndex] & QuestionBlock[BIndex] & QuestionCol[CIndex];
+
+
 	}
 
 	return;
@@ -441,6 +448,110 @@ void Sudoku::changeCol(int a , int b)
 
 void Sudoku::rotate(int n)
 {
+	int a=n%4;
+	int test=a;
+	//int tmp;
+	int Array[81];
+	int ArrayAfterRotate[81];
+
+	printf("1 rotate a=%d\n",a);
+
+		int Cell_Ans_bit;
+		int Value;		
+
+	if (a==0)
+	{
+		for(i = 0;i < 81; i++)
+			{
+				Cell_Ans_bit = Entry[i];
+
+				if(Entry[i]==0)
+				{
+					Array[i]=0;
+
+				}
+				else
+				{
+					for(Value = 0; Value <= 9; Value++)
+					{
+						if(Cell_Ans_bit==(1<<Value))
+							Array[i]=Value;
+					}
+				}
+
+				printf("%d ",Array[i]);
+
+				if((i % 9) == 8)
+					printf("\n");
+			}
+
+		return ;
+	}
+	while(a>0)
+	{
+
+		printf("a=%d\n",a );
+		if(a==test)
+		{
+			for(i = 0;i < 81; i++)
+			{
+				Cell_Ans_bit = Entry[i];
+
+				if(Entry[i]==0)
+				{
+					Array[i]=0;
+
+				}
+				else
+				{
+					for(Value = 0; Value <= 9; Value++)
+					{
+						if(Cell_Ans_bit==(1<<Value))
+							Array[i]=Value;
+					}
+				}
+
+				printf("%d ",Array[i]);
+
+				if((i % 9) == 8)
+					printf("\n");
+			}
+		}
+		else
+		{
+			for(i=0;i<81;i++)
+			{
+				Array[i]=ArrayAfterRotate[i];
+			}
+		}
+
+		printf("ArrayAfterRotate:\n");
+
+		k=0;
+		for(i=8 ; i>=0 ; i--)
+		{
+			for(j=0;j<9;j++)
+			{
+				ArrayAfterRotate[i+9*j]=Array[k];
+				k=k+1;
+			}
+		}
+
+		
+
+		for(i=0;i<81;i++)
+		{
+			printf("%d ",ArrayAfterRotate[i]);
+
+			if((i % 9) == 8)
+				printf("\n");
+		}
+		printf("\n");
+
+		a=a-1;
+	}
+
+	return ;
 
 }
 
@@ -541,8 +652,9 @@ void Sudoku::transform()
 		b=rand()%10;
 	}
 	printf("a=%d b=%d\n",a,b);
-	printf("haha\n");
-	changeNum(a,b);
+	//printf("haha\n");
+	
+	//changeNum(a,b);
 
 	int CIndex;
 	int RIndex;
@@ -572,7 +684,7 @@ void Sudoku::transform()
 		b=rand()%3;
 	}
 
-	changeRow(a,b);
+	//changeRow(a,b);
 	printf("haha\n");
 	for(i=0;i<9;i++)
 		//printf("QuestionRow[%d]=%d\n",i,QuestionCol[i]);
@@ -599,7 +711,7 @@ void Sudoku::transform()
 
 
 
-	changeCol(a,b);
+	//changeCol(a,b);
 
 	for(i=0;i<81;i++)
 	{
@@ -617,8 +729,43 @@ void Sudoku::transform()
 
 
 
-	flip(a);
+	//flip(a);
 
+	for(i=0;i<81;i++)
+	{
+		CIndex=ColIndex[i];
+		RIndex=RowIndex[i];
+		BIndex=BlockIndex[i];
+
+		QuestionCol[CIndex] |= Entry[i];
+		QuestionBlock[BIndex] |= Entry[i];
+		QuestionRow[RIndex] |= Entry[i];
+
+		//printf("%d ",Entry[i]);
+		//if((i % 9) == 8)
+		//	printf("\n");
+
+	}
+
+	/*for(i=0;i<9;i++)
+		printf("41 QuestionRow[%d]=%d\n",i,QuestionRow[i] );
+	for(i=0;i<9;i++)
+		printf("13 QuestionCol[%d]=%d\n",i,QuestionCol[i] );
+	for(i=0;i<9;i++)
+		printf("12 QuestionBlock[%d]=%d\n",i,QuestionBlock[i] );*/
+
+	//a=rand()%100;
+		printf("%d\n",QuestionCol[8] );
+		printf("%d\n",QuestionRow[6] );
+		printf("%d\n",QuestionBlock[8] );
+		printf("%d\n",Entry[56] );
+
+	a=rand()%100;
+
+	rotate(7);
+
+
+	
 
 	Print_arry();
 
