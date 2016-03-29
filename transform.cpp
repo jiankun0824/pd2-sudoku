@@ -5,7 +5,6 @@ int main()
 {
 	Sudoku test;
 	test.readIn();
-	printf("haha1\n");
 	test.transform();
 	return 0;
 
