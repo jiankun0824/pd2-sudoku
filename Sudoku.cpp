@@ -95,7 +95,7 @@ void ConvetArrytoNumber()
      		theQuestion[i]=0;
      	else
      	{
-     		for(value=0;value<9;value++)
+     		for(value=0;value<=9;value++)
      			if(Entry[i]==(1<<value))
      				theQuestion[i]=value;
      	}
@@ -170,7 +170,9 @@ void SolveNow(int S)
     	succed_counter++;
 
     	if(succed_counter>1)
+    	{
     		Multiple_ans=2;
+    	}
     	return;
     }
 
@@ -212,38 +214,60 @@ void Sudoku::solve()
 {
 	int Index;
 
-	for(i=0;i<9;i++)
+	sort_counter=0;
+	Multiple_ans=0;
+	succed_counter=0;
+
+	for(i=0;i<9;i++)//iniliatiation
 	{
-   		for(j=0;j<9;j++)
-   		{
+	   	for(j=0;j<9;j++)
+	   	{
 	     	Index=9*i+j;
 	    	RowIndex[Index]=i;
-	    	ColIndex[Index]=j;
+		   	ColIndex[Index]=j;
 	    	BlockIndex[Index]=(i/3)*3+(j/3);
 	    }
 	    Posible_Block[i]=Posible_Row[i]=Posible_Col[i]=ALL;
     }
 
 
-	for (Index = 0; Index < 81; Index++)
+	for (Index = 0; Index < 81; Index++)//iniliatiation
 	{
-    	Sort[Index] = Index;
-    	Entry[Index] = BLANK;
-    }
+	  	Sort[Index] = Index;
+	   	Entry[Index] = BLANK;
+	}
 
-	for(i = 0; i < 9; i++) 
-    	
+	SolveReadIn(); //
 
-    SolveReadIn();
+	for(i=0;i<3;i++)
+	{
+		for(j=0;j<3;j++)
+		{
+			for(k=0;k<3;k++)
+			{
+				if((Posible_Col[i*3+j]==Posible_Col[i*3+k] && Posible_Col[i*3+j]==1022) || (Posible_Block[i*3+j]==Posible_Block[i*3+k] && Posible_Block[i*3+j]==1022) || (Posible_Row[i*3+j]==Posible_Row[i*3+k] && Posible_Row[i*3+j]==1022))
+				{
+					printf("2\n");
+					exit(0);
+				}					
+
+			}
+		}
+	}
+
 
     SolveNow(sort_counter);
-    
+	       
     for(i=0;i<81;i++)
     {
     	if(theQuestion[i]==0)
+    	{
     		Multiple_ans=3;
     		break;
+    	}
     }
+
+    
 
     if(Multiple_ans==3)
     {
@@ -274,7 +298,6 @@ void Sudoku::solve()
 void Sudoku::changeNum(int a , int b)
 {
 
-	printf("change a=%d b=%d\n",a,b );
 	for(i=0;i<81;i++)
 	{		
 		if(theQuestion[i]==a)
@@ -320,7 +343,6 @@ void Sudoku::rotate(int n)
 {
 	int a=n%4;
 	int test=a;
-	printf("%d\n",a);
 	int Array[81];
 
 	while(a--)
@@ -389,7 +411,7 @@ void Sudoku::transform()
 		a=rand()%10;
 		b=rand()%10;
 	}
-	changeNum(a,b);
+	//changeNum(a,b);
 
 	a=0;
 	b=0;
@@ -399,6 +421,7 @@ void Sudoku::transform()
 	
 		b=rand()%3;
 	}
+	printf("a=%d b=%d\n",a,b);
 	changeRow(a,b);
 
 	a=0;
@@ -408,13 +431,13 @@ void Sudoku::transform()
 		a=rand()%3;
 		b=rand()%3;
 	}
-	changeCol(a,b);
+	//changeCol(a,b);
 
 	a=rand()%100;//random a for rotate()
-	rotate(a);
+	//rotate(a);
 
 	a=rand()%2; //random a for flip;
-	flip(a);
+	//flip(a);
 
 	for(i=0;i<81;i++)
 	{
