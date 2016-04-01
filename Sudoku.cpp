@@ -13,13 +13,20 @@ int BlockIndex[81];
 int RowIndex[81];
 int ColIndex[81];
 
-const int BLANK=0;
+const int ZERO=0;
 const int ALL=0x3fe;   // 1111111110
 
 int Entry[81];
 int Posible_Block[9];
 int Posible_Row[9];
 int Posible_Col[9];
+
+int RQuestion[9];
+int BQuestion[9];
+int CQuestion[9];
+int RCheck[9];
+int CCheck[9];
+int BCheck[9];
 
 int sort_counter=0;
 int Sort[81];
@@ -69,20 +76,43 @@ void Sudoku::readIn()
 void InitEntry(int Index,int value)
 {
  
-   int Bit= 1<<value;
-   int sort_counter2;
+	int Bit= 1<<value;
+	int sort_counter2;
+	int BIndex=BlockIndex[Index];
+	int RIndex=RowIndex[Index];
+	int CIndex=ColIndex[Index];
 
-   Entry[Index] = Bit;
-   Posible_Block[BlockIndex[Index]] &= ~Bit;
-   Posible_Col[ColIndex[Index]] &= ~Bit; // Simpler Col[j] &= ~Bit;
-   Posible_Row[RowIndex[Index]] &= ~Bit; // Simpler Row[i] &= ~Bit;
+	Entry[Index] = Bit;
+	Posible_Block[BIndex] &= ~Bit;
+	Posible_Col[CIndex] &= ~Bit; 
+	Posible_Row[RIndex] &= ~Bit;
 
-     sort_counter2=sort_counter;
-     while(sort_counter2<81 && Sort[sort_counter2]!=Index)
-           sort_counter2++ ;
+	BQuestion[BIndex] |= Bit; 
+	CQuestion[CIndex] |= Bit;
+	RQuestion[RIndex] |= Bit;
 
-     swap(Sort[sort_counter],Sort[sort_counter2]);
-     sort_counter++;
+	if(BQuestion[BIndex]==BCheck[BIndex] || CQuestion[CIndex]==CCheck[CIndex] || RQuestion[RIndex]==RCheck[RIndex])
+	{
+		printf("0\n");
+		exit(0);
+	}
+	else
+	{
+		BCheck[BIndex]=BQuestion[BIndex];
+		CCheck[CIndex]=CQuestion[CIndex];
+		RCheck[RIndex]=RQuestion[RIndex];
+	}
+
+
+
+
+
+	sort_counter2=sort_counter;
+	while(sort_counter2<81 && Sort[sort_counter2]!=Index)
+		sort_counter2++ ;
+	
+	swap(Sort[sort_counter],Sort[sort_counter2]);
+	sort_counter++;
 }
 
 
@@ -200,7 +230,7 @@ void SolveNow(int S)
         
         SolveNow(S+1);
 
-        Entry[Index]=BLANK;
+        Entry[Index]=ZERO;
         Posible_Block[BIndex] |= Bit;
         Posible_Row[RIndex] |= Bit;
         Posible_Col[CIndex] |= Bit;
@@ -228,33 +258,89 @@ void Sudoku::solve()
 	    	BlockIndex[Index]=(i/3)*3+(j/3);
 	    }
 	    Posible_Block[i]=Posible_Row[i]=Posible_Col[i]=ALL;
+	    RQuestion[i]=CQuestion[i]=BQuestion[i]=ZERO;
+	    RCheck[i]=BCheck[i]=CCheck[i]=ZERO;
     }
 
 
-	for (Index = 0; Index < 81; Index++)//iniliatiation
+	for (Index=0;Index<81;Index++)//iniliatiation
 	{
-	  	Sort[Index] = Index;
-	   	Entry[Index] = BLANK;
+	  	Sort[Index]=Index;
+	   	Entry[Index]=ZERO;
 	}
 
-	SolveReadIn(); //
+	SolveReadIn(); 
 
-	for(i=0;i<3;i++)
+	//check two row or col all in 0
+	int row=0;
+	int col=0;
+	for(i=0;i<9;i++)
 	{
-		for(j=0;j<3;j++)
+		if(Posible_Col[i]==1022)
+			col=1;
+
+		if(Posible_Row[i]==1022)
+			row=1;
+
+		if(col)
 		{
-			for(k=0;k<3;k++)
+			if((i%3)==0)
 			{
-				if((Posible_Col[i*3+j]==Posible_Col[i*3+k] && Posible_Col[i*3+j]==1022) || (Posible_Block[i*3+j]==Posible_Block[i*3+k] && Posible_Block[i*3+j]==1022) || (Posible_Row[i*3+j]==Posible_Row[i*3+k] && Posible_Row[i*3+j]==1022))
+				if(Posible_Col[i+1]==1022 || Posible_Col[i+2]==1022)
 				{
 					printf("2\n");
 					exit(0);
-				}					
-
+				}
+			}
+			else if((i%3)==1)
+			{
+				if(Posible_Col[i-1]==1022 || Posible_Col[i+2]==1022)
+				{
+					printf("2\n");
+					exit(0);
+				}
+			}
+			else if((i%3)==2)
+			{
+				if(Posible_Col[i-1]==1022 || Posible_Col[i-2]==1022)
+				{
+					printf("2\n");
+					exit(0);
+				}
 			}
 		}
-	}
 
+		if(row)
+		{
+			if((i%3)==0)
+			{
+				if(Posible_Row[i+1]==1022 || Posible_Row[i+2]==1022)
+				{
+					printf("2\n");
+					exit(0);
+				}
+			}
+			else if((i%3)==1)
+			{
+				if(Posible_Row[i-1]==1022 || Posible_Row[i+2]==1022)
+				{
+					printf("2\n");
+					exit(0);
+				}
+			}
+			else if((i%3)==2)
+			{
+				if(Posible_Row[i-1]==1022 || Posible_Row[i-2]==1022)
+				{
+					printf("2\n");
+					exit(0);
+				}
+			}
+		}
+
+		row=0;
+		col=0;
+	}
 
     SolveNow(sort_counter);
 	       
