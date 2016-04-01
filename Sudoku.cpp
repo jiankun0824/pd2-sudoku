@@ -321,7 +321,7 @@ void Sudoku::changeRow(int a , int b)
 		swap(a,b);
 
 	for(i=0;i<27;i++)
-		swap(theQuestion[3*3*a+i],theQuestion[(b-a)*3*3+i+27]);
+		swap(theQuestion[a*27+i], theQuestion[b*27+i]);
 
 	return;
 }
@@ -341,9 +341,11 @@ void Sudoku::changeCol(int a , int b)
 
 void Sudoku::rotate(int n)
 {
-	int a=n%4;
-	int test=a;
+	int a=n%5;
 	int Array[81];
+
+	if(a==0)
+		return;
 
 	while(a--)
 	{
@@ -373,7 +375,7 @@ void horizontal()
 	for(i=0;i<4;i++)
 	{
 		for(j=0;j<9;j++)
-			swap(theQuestion[i+9*j],theQuestion[(8-i)+(9*j)]);
+			swap(theQuestion[i*9+j],theQuestion[(8-i)*9+j]);
 	}
 
 	return;
@@ -384,7 +386,7 @@ void vertical()
 	for(i=0;i<4;i++)
 	{
 		for(j=0;j<9;j++)
-			swap(theQuestion[(i*9)+j], theQuestion[(8-i)*9+j]);
+			swap(theQuestion[(j*9)+i], theQuestion[(8-i)+9*j]);
 	}
 	return;
 }
@@ -395,7 +397,7 @@ void Sudoku::flip(int n)
 	{
 		vertical();
 	}
-	else
+	else if(n==1)
 	{
 		horizontal();
 	}
@@ -411,7 +413,7 @@ void Sudoku::transform()
 		a=rand()%10;
 		b=rand()%10;
 	}
-	//changeNum(a,b);
+	changeNum(5,9);
 
 	a=0;
 	b=0;
@@ -421,8 +423,7 @@ void Sudoku::transform()
 	
 		b=rand()%3;
 	}
-	printf("a=%d b=%d\n",a,b);
-	changeRow(a,b);
+	changeRow(1,2);
 
 	a=0;
 	b=0;
@@ -431,13 +432,13 @@ void Sudoku::transform()
 		a=rand()%3;
 		b=rand()%3;
 	}
-	//changeCol(a,b);
+	changeCol(0,2);
 
 	a=rand()%100;//random a for rotate()
-	//rotate(a);
+	rotate(41);
 
 	a=rand()%2; //random a for flip;
-	//flip(a);
+	flip(1);
 
 	for(i=0;i<81;i++)
 	{
